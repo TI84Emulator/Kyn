@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 
-const socket = io(process.env.REACT_APP_SERVER_URL); // Use environment variable
+const socket = io(import.meta.env.VITE_SERVER_URL); // Use environment variable
 
 function App() {
   const [message, setMessage] = useState('');
