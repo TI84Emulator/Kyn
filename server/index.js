@@ -7,13 +7,14 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server, {
   cors: {
-    origin: 'http://localhost:5173',
+    origin: '*', // Use '*' for open access or specify allowed domains
     methods: ['GET', 'POST'],
   }
 });
 
+// Middleware for CORS
 app.use(cors({
-  origin: 'http://localhost:5173', // Allow requests from this origin
+  origin: '*', // Use '*' for open access or specify allowed domains
 }));
 
 let presses = 0;
@@ -31,6 +32,9 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(3000, () => {
-  console.log('Server listening on http://localhost:3000');
+// Use environment variable PORT or default to 3000
+const PORT = process.env.PORT || 3000;
+
+server.listen(PORT, () => {
+  console.log(`Server listening on http://localhost:${PORT}`);
 });
