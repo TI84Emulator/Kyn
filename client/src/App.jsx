@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 
-
-
-const socket = io('http://localhost:3000'); // Adjust the URL if needed
+const socket = io(process.env.REACT_APP_SERVER_URL); // Use environment variable
 
 function App() {
   const [message, setMessage] = useState('');
