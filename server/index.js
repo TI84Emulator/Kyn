@@ -1,7 +1,8 @@
 const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
-const cors = require('cors'); // Import CORS
+const path = require('path');
+const cors = require('cors');
 
 const app = express();
 const server = http.createServer(app);
@@ -30,6 +31,14 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('Client disconnected');
   });
+});
+
+// Serve static files from the 'dist' directory
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// Serve index.html for all other requests (SPA routing)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Use environment variable PORT or default to 3000
