@@ -12,7 +12,7 @@ node_modules/
 
 # Local environment files
 *.local
-.env
+
 
 # Build directories
 # Keep dist/ since it's required for production
