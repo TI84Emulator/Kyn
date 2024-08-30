@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 
-const socket = io(import.meta.env.VITE_SERVER_URL || 'http://localhost:3000'); // Fallback to localhost for development
+const socket = io('https://nine-vigorous-joggers.glitch.me'); // Fallback to localhost for development
 
 function App() {
   const [message, setMessage] = useState('');
