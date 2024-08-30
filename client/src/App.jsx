@@ -1,36 +1,49 @@
-import React, { useEffect, useState } from 'react';
-import io from 'socket.io-client';
+const express = require('express');
+const http = require('http');
+const socketIO = require('socket.io');
+const path = require('path');
+const cors = require('cors');
 
-const socket = io(import.meta.env.VITE_SERVER_URL || 'http://localhost:3000'); // Fallback to localhost for development
+const app = express();
+const server = http.createServer(app);
+const io = socketIO(server, {
+  cors: {
+    origin: '*', // Allow all origins (for development; be more restrictive in production)
+    methods: ['GET', 'POST'],
+  }
+});
 
-function App() {
-  const [message, setMessage] = useState('');
-  const [presses, setPresses] = useState(0);
+// Middleware for CORS
+app.use(cors({
+  origin: '*', // Allow all origins (for development; be more restrictive in production)
+}));
 
-  useEffect(() => {
-    // Listen for 'update' events from the server
-    socket.on('update', (data) => {
-      setMessage(data.message);
-      setPresses(data.presses);
-    });
+let presses = 0;
 
-    // Cleanup the socket connection on component unmount
-    return () => {
-      socket.off('update');
-    };
-  }, []);
+io.on('connection', (socket) => {
+  console.log('New client connected');
 
-  const handleClick = () => {
-    socket.emit('buttonClick');
-  };
+  socket.on('buttonClick', () => {
+    presses += 1;
+    io.emit('update', { message: 'Button clicked!', presses });
+  });
 
-  return (
-    <div>
-      <button onClick={handleClick}>Click Me!</button>
-      <p>Message from server: {message}</p>
-      <p>Total presses: {presses}</p>
-    </div>
-  );
-}
+  socket.on('disconnect', () => {
+    console.log('Client disconnected');
+  });
+});
 
-export default App;
+// Serve static files from the 'dist' directory
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// Serve index.html for all other requests (SPA routing)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
+// Use environment variable PORT or default to 3000
+const PORT = process.env.PORT || 3000;
+
+server.listen(PORT, () => {
+  console.log(`Server listening on http://localhost:${PORT}`);
+});
